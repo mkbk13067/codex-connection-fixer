@@ -12,11 +12,19 @@ This tool does not change VPN, proxy, DNS, firewall, Codex login, or GitHub sett
 
 ## Run
 
-Double-click:
+Recommended no-console launcher:
+
+```text
+Run-CodexConnectionFixer.vbs
+```
+
+Fallback batch launcher:
 
 ```text
 Run-CodexConnectionFixer.bat
 ```
+
+The VBScript launcher starts the GUI without leaving a terminal window behind. The batch launcher starts PowerShell with `-WindowStyle Hidden` and exits immediately.
 
 If Windows blocks the script, right-click the folder, choose "Open in Terminal", and run:
 

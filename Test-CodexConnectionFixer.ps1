@@ -74,6 +74,15 @@ function Write-Utf8 {
   [System.IO.File]::WriteAllText($Path, $Content, [System.Text.Encoding]::UTF8)
 }
 
+function New-CodePointString {
+  param([Parameter(Mandatory = $true)][int[]]$CodePoints)
+
+  $characters = foreach ($codePoint in $CodePoints) {
+    [char]$codePoint
+  }
+  return (-join $characters)
+}
+
 Invoke-Test "empty config gets HTTP-only provider" {
   Assert-CommandExists "Update-CodexConfigText"
 
@@ -211,9 +220,34 @@ Invoke-Test "GUI entry points and launcher exist" {
     RollbackAvailable = $true
   })
 
-  Assert-True -Condition ($statusText.Contains("Fixed")) -Message "status text should include state"
   Assert-True -Condition ($statusText.Contains("config.toml")) -Message "status text should include config path"
   Assert-True -Condition ([System.IO.File]::Exists((Join-Path $PSScriptRoot "Run-CodexConnectionFixer.bat"))) -Message "launcher batch file is missing"
+}
+
+Invoke-Test "GUI defaults to Chinese and launchers do not leave a terminal window" {
+  Assert-CommandExists "Format-CodexConnectionStatusText"
+
+  $statusText = Format-CodexConnectionStatusText -Status ([pscustomobject]@{
+    State = "Fixed"
+    ConfigPath = "C:\Users\demo\.codex\config.toml"
+    ModelProvider = "openai_http"
+    HasHttpProviderTable = $true
+    SupportsWebsocketsFalse = $true
+    RollbackAvailable = $true
+  })
+  $batchPath = Join-Path $PSScriptRoot "Run-CodexConnectionFixer.bat"
+  $vbsPath = Join-Path $PSScriptRoot "Run-CodexConnectionFixer.vbs"
+  $batch = Read-Utf8 -Path $batchPath
+  $stateFixed = New-CodePointString -CodePoints @(0x72B6, 0x6001, 0xFF1A, 0x5DF2, 0x4FEE, 0x590D)
+  $configPrefix = New-CodePointString -CodePoints @(0x914D, 0x7F6E, 0xFF1A)
+  $webSocketLabel = "WebSocket " + (New-CodePointString -CodePoints @(0x5DF2, 0x7981, 0x7528, 0xFF1A)) + "True"
+
+  Assert-True -Condition ($statusText.Contains($stateFixed)) -Message "status text should default to Chinese"
+  Assert-True -Condition ($statusText.Contains($configPrefix + "C:\Users\demo\.codex\config.toml")) -Message "config label should be Chinese"
+  Assert-True -Condition ($statusText.Contains($webSocketLabel)) -Message "WebSocket status label should be Chinese"
+  Assert-True -Condition ($batch.Contains("-WindowStyle Hidden")) -Message "batch launcher should hide the PowerShell window"
+  Assert-True -Condition ([System.IO.File]::Exists($vbsPath)) -Message "no-console VBScript launcher is missing"
+  Assert-True -Condition ((Read-Utf8 -Path $vbsPath).Contains(", 0, False")) -Message "VBScript launcher should run hidden"
 }
 
 if ($script:Failures -gt 0) {

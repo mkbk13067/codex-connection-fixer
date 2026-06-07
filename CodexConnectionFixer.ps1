@@ -3,6 +3,66 @@ $ErrorActionPreference = "Stop"
 
 $script:FixerVersion = "0.1.0"
 
+function New-CodexFixerString {
+  param([Parameter(Mandatory = $true)][int[]]$CodePoints)
+
+  $characters = foreach ($codePoint in $CodePoints) {
+    [char]$codePoint
+  }
+  return (-join $characters)
+}
+
+function Get-CodexConnectionFixerUiText {
+  return [pscustomobject]@{
+    WindowTitle = "Codex " + (New-CodexFixerString -CodePoints @(0x8FDE, 0x63A5, 0x4FEE, 0x590D, 0x5668))
+    Title = (New-CodexFixerString -CodePoints @(0x4FEE, 0x590D)) + " Codex " + (New-CodexFixerString -CodePoints @(0x53CD, 0x590D, 0x91CD, 0x8FDE, 0x95EE, 0x9898))
+    Description = (New-CodexFixerString -CodePoints @(0x8FD0, 0x884C, 0x4FEE, 0x590D, 0x4F1A, 0x5207, 0x6362, 0x5230)) + " HTTP-only Provider" + (New-CodexFixerString -CodePoints @(0xFF1B, 0x56DE, 0x6EDA, 0x4F1A, 0x6062, 0x590D, 0x672C, 0x5DE5, 0x5177, 0x521B, 0x5EFA, 0x7684, 0x5907, 0x4EFD, 0x3002))
+    DetectStatus = New-CodexFixerString -CodePoints @(0x68C0, 0x6D4B, 0x5F53, 0x524D, 0x72B6, 0x6001)
+    RunFix = New-CodexFixerString -CodePoints @(0x8FD0, 0x884C, 0x4FEE, 0x590D)
+    Rollback = New-CodexFixerString -CodePoints @(0x56DE, 0x6EDA, 0x4FEE, 0x590D)
+    OpenConfigFolder = New-CodexFixerString -CodePoints @(0x6253, 0x5F00, 0x914D, 0x7F6E, 0x76EE, 0x5F55)
+    StateLabel = New-CodexFixerString -CodePoints @(0x72B6, 0x6001, 0xFF1A)
+    ConfigLabel = New-CodexFixerString -CodePoints @(0x914D, 0x7F6E, 0xFF1A)
+    NotSet = New-CodexFixerString -CodePoints @(0x672A, 0x8BBE, 0x7F6E)
+    HttpProviderTableLabel = "HTTP Provider " + (New-CodexFixerString -CodePoints @(0x8868, 0xFF1A))
+    WebSocketsDisabledLabel = "WebSocket " + (New-CodexFixerString -CodePoints @(0x5DF2, 0x7981, 0x7528, 0xFF1A))
+    RollbackAvailableLabel = New-CodexFixerString -CodePoints @(0x53EF, 0x56DE, 0x6EDA, 0xFF1A)
+    Fixed = New-CodexFixerString -CodePoints @(0x5DF2, 0x4FEE, 0x590D)
+    NotFixed = New-CodexFixerString -CodePoints @(0x672A, 0x4FEE, 0x590D)
+    IncompleteConfig = New-CodexFixerString -CodePoints @(0x914D, 0x7F6E, 0x4E0D, 0x5B8C, 0x6574)
+    RolledBack = New-CodexFixerString -CodePoints @(0x5DF2, 0x56DE, 0x6EDA)
+    NoState = New-CodexFixerString -CodePoints @(0x65E0, 0x56DE, 0x6EDA, 0x72B6, 0x6001)
+    MissingBackup = New-CodexFixerString -CodePoints @(0x5907, 0x4EFD, 0x7F3A, 0x5931)
+    StatusRefreshed = New-CodexFixerString -CodePoints @(0x72B6, 0x6001, 0x5DF2, 0x5237, 0x65B0, 0xFF1A)
+    FixApplied = New-CodexFixerString -CodePoints @(0x4FEE, 0x590D, 0x5DF2, 0x5B8C, 0x6210, 0x3002, 0x5907, 0x4EFD, 0xFF1A)
+    RestartAfterFix = (New-CodexFixerString -CodePoints @(0x8BF7, 0x91CD, 0x542F)) + " Codex" + (New-CodexFixerString -CodePoints @(0xFF0C, 0x5E76, 0x68C0, 0x67E5, 0x662F, 0x5426, 0x8FD8, 0x4F1A, 0x53CD, 0x590D)) + " Reconnecting" + (New-CodexFixerString -CodePoints @(0x3002))
+    StatusFailed = New-CodexFixerString -CodePoints @(0x72B6, 0x6001, 0x68C0, 0x67E5, 0x5931, 0x8D25, 0xFF1A)
+    NoStateMessage = New-CodexFixerString -CodePoints @(0x6CA1, 0x6709, 0x4FEE, 0x590D, 0x5668, 0x72B6, 0x6001, 0x6587, 0x4EF6, 0xFF1B, 0x4E0D, 0x4F1A, 0x731C, 0x6D4B, 0x8981, 0x6062, 0x590D, 0x54EA, 0x4E2A, 0x5907, 0x4EFD, 0x3002)
+    RollbackCompleted = New-CodexFixerString -CodePoints @(0x56DE, 0x6EDA, 0x5DF2, 0x5B8C, 0x6210, 0xFF0C, 0x6765, 0x6E90, 0xFF1A)
+    RestartAfterRollback = (New-CodexFixerString -CodePoints @(0x56DE, 0x6EDA, 0x540E, 0x8BF7, 0x91CD, 0x542F)) + " Codex" + (New-CodexFixerString -CodePoints @(0x3002))
+    RollbackNotCompleted = New-CodexFixerString -CodePoints @(0x56DE, 0x6EDA, 0x672A, 0x5B8C, 0x6210, 0xFF1A)
+    RollbackFailed = New-CodexFixerString -CodePoints @(0x56DE, 0x6EDA, 0x5931, 0x8D25, 0xFF1A)
+    FolderOpened = New-CodexFixerString -CodePoints @(0x5DF2, 0x6253, 0x5F00, 0x914D, 0x7F6E, 0x76EE, 0x5F55, 0x3002)
+    OpenFolderFailed = New-CodexFixerString -CodePoints @(0x6253, 0x5F00, 0x76EE, 0x5F55, 0x5931, 0x8D25, 0xFF1A)
+    RunFixFailed = New-CodexFixerString -CodePoints @(0x8FD0, 0x884C, 0x4FEE, 0x590D, 0x5931, 0x8D25, 0xFF1A)
+  }
+}
+
+function Convert-CodexConnectionStateLabel {
+  param([Parameter(Mandatory = $true)][string]$State)
+
+  $text = Get-CodexConnectionFixerUiText
+  switch ($State) {
+    "Fixed" { return $text.Fixed }
+    "Not Fixed" { return $text.NotFixed }
+    "Incomplete Config" { return $text.IncompleteConfig }
+    "RolledBack" { return $text.RolledBack }
+    "NoState" { return $text.NoState }
+    "MissingBackup" { return $text.MissingBackup }
+    default { return $State }
+  }
+}
+
 function ConvertTo-NormalizedLines {
   param([AllowNull()][string]$Content)
 
@@ -343,19 +403,21 @@ function Rollback-CodexConnectionFix {
 function Format-CodexConnectionStatusText {
   param([Parameter(Mandatory = $true)]$Status)
 
+  $text = Get-CodexConnectionFixerUiText
   $modelProvider = if ($null -eq $Status.ModelProvider -or [string]::IsNullOrWhiteSpace([string]$Status.ModelProvider)) {
-    "(not set)"
+    $text.NotSet
   } else {
     [string]$Status.ModelProvider
   }
+  $stateLabel = Convert-CodexConnectionStateLabel -State ([string]$Status.State)
 
   return (@(
-    "State: $($Status.State)"
-    "Config: $($Status.ConfigPath)"
+    "$($text.StateLabel)$stateLabel"
+    "$($text.ConfigLabel)$($Status.ConfigPath)"
     "model_provider: $modelProvider"
-    "HTTP provider table: $($Status.HasHttpProviderTable)"
-    "WebSockets disabled: $($Status.SupportsWebsocketsFalse)"
-    "Rollback available: $($Status.RollbackAvailable)"
+    "$($text.HttpProviderTableLabel)$($Status.HasHttpProviderTable)"
+    "$($text.WebSocketsDisabledLabel)$($Status.SupportsWebsocketsFalse)"
+    "$($text.RollbackAvailableLabel)$($Status.RollbackAvailable)"
   ) -join [Environment]::NewLine)
 }
 
@@ -370,26 +432,27 @@ function Add-CodexConnectionFixerLog {
 }
 
 function Start-CodexConnectionFixerGui {
+  $text = Get-CodexConnectionFixerUiText
   Add-Type -AssemblyName System.Windows.Forms
   Add-Type -AssemblyName System.Drawing
 
   [System.Windows.Forms.Application]::EnableVisualStyles()
 
   $form = New-Object System.Windows.Forms.Form
-  $form.Text = "Codex Connection Fixer"
+  $form.Text = $text.WindowTitle
   $form.StartPosition = "CenterScreen"
   $form.Size = New-Object System.Drawing.Size(720, 460)
   $form.MinimumSize = New-Object System.Drawing.Size(680, 420)
 
   $titleLabel = New-Object System.Windows.Forms.Label
-  $titleLabel.Text = "Fix Codex WebSocket reconnect delay"
+  $titleLabel.Text = $text.Title
   $titleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
   $titleLabel.AutoSize = $true
   $titleLabel.Location = New-Object System.Drawing.Point(16, 16)
   $form.Controls.Add($titleLabel)
 
   $description = New-Object System.Windows.Forms.Label
-  $description.Text = "Run Fix selects an HTTP-only Codex provider. Rollback restores the last backup created by this tool."
+  $description.Text = $text.Description
   $description.Font = New-Object System.Drawing.Font("Segoe UI", 9)
   $description.AutoSize = $true
   $description.Location = New-Object System.Drawing.Point(18, 48)
@@ -405,25 +468,25 @@ function Start-CodexConnectionFixerGui {
   $form.Controls.Add($statusBox)
 
   $detectButton = New-Object System.Windows.Forms.Button
-  $detectButton.Text = "Detect Status"
+  $detectButton.Text = $text.DetectStatus
   $detectButton.Location = New-Object System.Drawing.Point(20, 212)
   $detectButton.Size = New-Object System.Drawing.Size(140, 34)
   $form.Controls.Add($detectButton)
 
   $runButton = New-Object System.Windows.Forms.Button
-  $runButton.Text = "Run Fix"
+  $runButton.Text = $text.RunFix
   $runButton.Location = New-Object System.Drawing.Point(174, 212)
   $runButton.Size = New-Object System.Drawing.Size(140, 34)
   $form.Controls.Add($runButton)
 
   $rollbackButton = New-Object System.Windows.Forms.Button
-  $rollbackButton.Text = "Rollback"
+  $rollbackButton.Text = $text.Rollback
   $rollbackButton.Location = New-Object System.Drawing.Point(328, 212)
   $rollbackButton.Size = New-Object System.Drawing.Size(140, 34)
   $form.Controls.Add($rollbackButton)
 
   $openFolderButton = New-Object System.Windows.Forms.Button
-  $openFolderButton.Text = "Open Config Folder"
+  $openFolderButton.Text = $text.OpenConfigFolder
   $openFolderButton.Location = New-Object System.Drawing.Point(482, 212)
   $openFolderButton.Size = New-Object System.Drawing.Size(160, 34)
   $form.Controls.Add($openFolderButton)
@@ -441,9 +504,9 @@ function Start-CodexConnectionFixerGui {
     try {
       $status = Get-CodexConnectionFixerStatus
       $statusBox.Text = Format-CodexConnectionStatusText -Status $status
-      Add-CodexConnectionFixerLog -TextBox $logBox -Message "Status refreshed: $($status.State)"
+      Add-CodexConnectionFixerLog -TextBox $logBox -Message "$($text.StatusRefreshed)$(Convert-CodexConnectionStateLabel -State ([string]$status.State))"
     } catch {
-      Add-CodexConnectionFixerLog -TextBox $logBox -Message "Status check failed: $($_.Exception.Message)"
+      Add-CodexConnectionFixerLog -TextBox $logBox -Message "$($text.StatusFailed)$($_.Exception.Message)"
     }
   }
 
@@ -452,11 +515,11 @@ function Start-CodexConnectionFixerGui {
   $runButton.Add_Click({
     try {
       $result = Apply-CodexConnectionFix
-      Add-CodexConnectionFixerLog -TextBox $logBox -Message "Fix applied. Backup: $($result.BackupPath)"
-      Add-CodexConnectionFixerLog -TextBox $logBox -Message "Restart Codex and check whether Reconnecting repeats."
+      Add-CodexConnectionFixerLog -TextBox $logBox -Message "$($text.FixApplied)$($result.BackupPath)"
+      Add-CodexConnectionFixerLog -TextBox $logBox -Message $text.RestartAfterFix
       & $refreshStatus
     } catch {
-      Add-CodexConnectionFixerLog -TextBox $logBox -Message "Run Fix failed: $($_.Exception.Message)"
+      Add-CodexConnectionFixerLog -TextBox $logBox -Message "$($text.RunFixFailed)$($_.Exception.Message)"
     }
   })
 
@@ -464,19 +527,19 @@ function Start-CodexConnectionFixerGui {
     try {
       $result = Rollback-CodexConnectionFix
       if ($result.State -eq "RolledBack") {
-        Add-CodexConnectionFixerLog -TextBox $logBox -Message "Rollback completed from: $($result.BackupPath)"
-        Add-CodexConnectionFixerLog -TextBox $logBox -Message "Restart Codex after rollback."
+        Add-CodexConnectionFixerLog -TextBox $logBox -Message "$($text.RollbackCompleted)$($result.BackupPath)"
+        Add-CodexConnectionFixerLog -TextBox $logBox -Message $text.RestartAfterRollback
       } elseif ($result.State -eq "NoState") {
-        Add-CodexConnectionFixerLog -TextBox $logBox -Message $result.Message
+        Add-CodexConnectionFixerLog -TextBox $logBox -Message $text.NoStateMessage
         if ([System.IO.Directory]::Exists($result.BackupDir)) {
           Start-Process explorer.exe $result.BackupDir
         }
       } else {
-        Add-CodexConnectionFixerLog -TextBox $logBox -Message "Rollback did not complete: $($result.Message)"
+        Add-CodexConnectionFixerLog -TextBox $logBox -Message "$($text.RollbackNotCompleted)$($result.Message)"
       }
       & $refreshStatus
     } catch {
-      Add-CodexConnectionFixerLog -TextBox $logBox -Message "Rollback failed: $($_.Exception.Message)"
+      Add-CodexConnectionFixerLog -TextBox $logBox -Message "$($text.RollbackFailed)$($_.Exception.Message)"
     }
   })
 
@@ -485,9 +548,9 @@ function Start-CodexConnectionFixerGui {
       $paths = Get-CodexConnectionFixerPaths
       New-Item -ItemType Directory -Force $paths.CodexHome | Out-Null
       Start-Process explorer.exe $paths.CodexHome
-      Add-CodexConnectionFixerLog -TextBox $logBox -Message "Opened config folder."
+      Add-CodexConnectionFixerLog -TextBox $logBox -Message $text.FolderOpened
     } catch {
-      Add-CodexConnectionFixerLog -TextBox $logBox -Message "Open folder failed: $($_.Exception.Message)"
+      Add-CodexConnectionFixerLog -TextBox $logBox -Message "$($text.OpenFolderFailed)$($_.Exception.Message)"
     }
   })
 
