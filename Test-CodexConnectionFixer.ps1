@@ -250,6 +250,31 @@ Invoke-Test "GUI defaults to Chinese and launchers do not leave a terminal windo
   Assert-True -Condition ((Read-Utf8 -Path $vbsPath).Contains(", 0, False")) -Message "VBScript launcher should run hidden"
 }
 
+Invoke-Test "release build creates a single exe asset and README documents releases" {
+  $buildPath = Join-Path $PSScriptRoot "Build-Release.ps1"
+  $readmePath = Join-Path $PSScriptRoot "README.md"
+  $outputDir = Join-Path ([System.IO.Path]::GetTempPath()) ("codex-fixer-release-" + [Guid]::NewGuid().ToString("N"))
+
+  try {
+    Assert-True -Condition ([System.IO.File]::Exists($buildPath)) -Message "release build script is missing"
+
+    & $buildPath -OutputDir $outputDir -Version "9.9.9-test" | Out-Null
+    $exePath = Join-Path $outputDir "CodexConnectionFixer-9.9.9-test.exe"
+    $shaPath = "$exePath.sha256.txt"
+    $header = [System.IO.File]::ReadAllBytes($exePath)[0..1]
+    $readme = Read-Utf8 -Path $readmePath
+
+    Assert-True -Condition ([System.IO.File]::Exists($exePath)) -Message "release exe was not created"
+    Assert-True -Condition ([System.IO.File]::Exists($shaPath)) -Message "release checksum was not created"
+    Assert-Equal -Actual ([char]$header[0]) -Expected "M" -Message "exe should start with MZ header"
+    Assert-Equal -Actual ([char]$header[1]) -Expected "Z" -Message "exe should start with MZ header"
+    Assert-True -Condition ($readme.Contains("CodexConnectionFixer.exe")) -Message "README should mention the downloadable exe"
+    Assert-True -Condition ($readme.Contains("GitHub Release")) -Message "README should explain GitHub Release downloads"
+  } finally {
+    Remove-Item -Recurse -Force $outputDir -ErrorAction SilentlyContinue
+  }
+}
+
 if ($script:Failures -gt 0) {
   Write-Host "$script:Failures test(s) failed."
   exit 1

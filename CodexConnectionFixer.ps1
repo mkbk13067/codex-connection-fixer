@@ -1,7 +1,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$script:FixerVersion = "0.1.0"
+$script:FixerVersion = "1.0.0"
 
 function New-CodexFixerString {
   param([Parameter(Mandatory = $true)][int[]]$CodePoints)

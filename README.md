@@ -1,61 +1,59 @@
-# Codex Connection Fixer
+# Codex 连接修复器
 
-A small Windows GUI utility for Codex users whose sessions pause at startup while Codex repeatedly reconnects before falling back to HTTP.
+一个 Windows 小工具，用来解决部分网络或代理环境下 Codex 启动前反复 `Reconnecting`、等待很久才开始响应的问题。
 
-The tool applies a reversible Codex configuration change that selects an HTTP-only OpenAI provider.
+它会把 Codex 配置切换到 HTTP-only Provider，避开不稳定的 WebSocket 通道；所有修改都会先备份，并支持一键回滚。
 
-## Who This Helps
+## 直接下载运行
 
-Use this tool when Codex shows repeated `Reconnecting` attempts before it starts thinking, especially on networks or proxy setups where WebSocket traffic is unreliable.
+普通用户不需要下载源码。
 
-This tool does not change VPN, proxy, DNS, firewall, Codex login, or GitHub settings.
+Release 下载页：<https://github.com/mkbk13067/codex-connection-fixer/releases/latest>
 
-## Run
+1. 打开 GitHub Release 页面。
+2. 下载最新版本里的 `CodexConnectionFixer-版本号.exe`，例如 `CodexConnectionFixer-1.0.0.exe`。
+3. 双击运行这个 exe。
+4. 点击 `运行修复`。
+5. 重启 Codex。
 
-Recommended no-console launcher:
+如果想撤销修改，再次打开 exe，点击 `回滚修复`，然后重启 Codex。
 
-```text
-Run-CodexConnectionFixer.vbs
-```
+## 适用场景
 
-Fallback batch launcher:
+适合这些情况：
 
-```text
-Run-CodexConnectionFixer.bat
-```
+- Codex 每次开始前都会多次显示 `Reconnecting`。
+- 网络、代理或 VPN 对 WebSocket 支持不稳定。
+- 等待多次重连后 Codex 才开始思考。
 
-The VBScript launcher starts the GUI without leaving a terminal window behind. The batch launcher starts PowerShell with `-WindowStyle Hidden` and exits immediately.
+不适合这些情况：
 
-If Windows blocks the script, right-click the folder, choose "Open in Terminal", and run:
+- Codex 没有登录。
+- API 或账号权限不可用。
+- GitHub、代理、DNS、防火墙需要单独配置。
+- 其他与 WebSocket fallback 无关的启动慢问题。
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\CodexConnectionFixer.ps1
-```
+## 它会修改什么
 
-## Buttons
-
-- `Detect Status`: checks the current Codex configuration without changing files.
-- `Run Fix`: creates a backup and applies the HTTP-only provider configuration.
-- `Rollback`: restores the most recent backup created by this tool.
-- `Open Config Folder`: opens `%USERPROFILE%\.codex`.
-
-Restart Codex after running the fix or rollback.
-
-## What It Changes
-
-Target file:
+目标文件：
 
 ```text
 %USERPROFILE%\.codex\config.toml
 ```
 
-The fix sets a top-level provider:
+运行修复前会创建备份：
+
+```text
+%USERPROFILE%\.codex\backups\config.toml.backup-YYYYMMDD-HHMMSS
+```
+
+修复器会设置顶层 provider：
 
 ```toml
 model_provider = "openai_http"
 ```
 
-It also creates or updates this provider table:
+并确保存在 HTTP-only provider：
 
 ```toml
 [model_providers.openai_http]
@@ -64,49 +62,91 @@ wire_api = "responses"
 supports_websockets = false
 ```
 
-The script preserves existing model settings, plugin settings, project trust settings, notify settings, and other unrelated tables.
+它会保留原有的 model、plugin、project trust、notify 等其他配置。
 
-## Backup And Rollback
+## 回滚
 
-Before writing config, the tool creates a backup:
-
-```text
-%USERPROFILE%\.codex\backups\config.toml.backup-YYYYMMDD-HHMMSS
-```
-
-It records rollback metadata here:
+修复器会记录最近一次备份：
 
 ```text
 %USERPROFILE%\.codex\codex-connection-fixer-state.json
 ```
 
-`Rollback` restores the backup recorded in that state file. If the state file is missing, the tool will not guess which backup to restore.
+点击 `回滚修复` 会恢复这份备份。  
+如果状态文件不存在，工具不会猜测要恢复哪一个备份，避免误覆盖用户配置。
 
-## Test
+## 界面按钮
 
-From this directory:
+- `检测当前状态`：只检查配置，不修改文件。
+- `运行修复`：备份配置并写入 HTTP-only Provider。
+- `回滚修复`：恢复本工具记录的最近一次备份。
+- `打开配置目录`：打开 `%USERPROFILE%\.codex`。
+
+## 从源码运行
+
+如果你不想用 exe，也可以运行脚本版本：
+
+```text
+Run-CodexConnectionFixer.vbs
+```
+
+备用入口：
+
+```text
+Run-CodexConnectionFixer.bat
+```
+
+也可以在 PowerShell 中运行：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\CodexConnectionFixer.ps1
+```
+
+## 构建 Release 版 exe
+
+在仓库根目录运行：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Build-Release.ps1 -Version 1.0.0
+```
+
+输出文件：
+
+```text
+dist\CodexConnectionFixer-1.0.0.exe
+dist\CodexConnectionFixer-1.0.0.exe.sha256.txt
+```
+
+`CodexConnectionFixer.exe` 是一个无控制台窗口的 Windows GUI 程序。发布页里的实际文件名会带版本号；用户只需要下载 exe 并双击运行。
+
+## 测试
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\Test-CodexConnectionFixer.ps1
 ```
 
-Expected result:
+期望结果：
 
 ```text
 All Codex Connection Fixer tests passed.
 ```
 
-## Troubleshooting
+## 常见问题
 
-If Codex still reconnects repeatedly after the fix:
+### 为什么会被 Windows 提醒未知发布者？
 
-1. Restart Codex completely.
-2. Click `Detect Status` and confirm state is `Fixed`.
-3. Check whether your Codex version supports `model_providers` and `supports_websockets`.
-4. If needed, click `Rollback` and report the issue with your Codex version and proxy/VPN setup.
+当前 exe 没有代码签名。Windows SmartScreen 可能会提醒未知发布者，这是未签名开源工具的常见表现。你可以从 Release 页面下载，并对照 `.sha256.txt` 校验文件。
 
-If rollback fails:
+### 修复后仍然反复重连怎么办？
 
-1. Click `Open Config Folder`.
-2. Open the `backups` folder.
-3. Restore the intended `config.toml.backup-*` file manually by renaming it to `config.toml`.
+1. 完全重启 Codex。
+2. 再次打开工具，点击 `检测当前状态`。
+3. 确认状态为 `已修复`。
+4. 如果仍有问题，点击 `回滚修复`，并检查你的代理/VPN 是否支持 Codex 所需连接。
+
+### 回滚失败怎么办？
+
+1. 点击 `打开配置目录`。
+2. 打开 `backups` 文件夹。
+3. 找到要恢复的 `config.toml.backup-*`。
+4. 手动复制为 `%USERPROFILE%\.codex\config.toml`。
